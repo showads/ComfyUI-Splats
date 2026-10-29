@@ -1,0 +1,297 @@
+{
+  "last_node_id": 6,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "SplatsLoadVideoPath",
+      "pos": [
+        40,
+        180
+      ],
+      "size": [
+        340,
+        90
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "video_path",
+          "type": "STRING",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SplatsLoadVideoPath"
+      },
+      "widgets_values": [
+        "/workspace/orbit.mp4"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "SplatsSetupDependencies",
+      "pos": [
+        40,
+        -40
+      ],
+      "size": [
+        340,
+        125
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "setup_status",
+          "type": "STRING",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SplatsSetupDependencies"
+      },
+      "widgets_values": [
+        false
+      ]
+    },
+    {
+      "id": 3,
+      "type": "SplatsPrepareVideo",
+      "pos": [
+        460,
+        130
+      ],
+      "size": [
+        340,
+        160
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video_path",
+          "type": "STRING",
+          "link": 1
+        },
+        {
+          "name": "setup_status",
+          "type": "STRING",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "dataset",
+          "type": "SPLATS_DATASET",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "image_directory",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SplatsPrepareVideo"
+      },
+      "widgets_values": [
+        "orbit_01",
+        64
+      ]
+    },
+    {
+      "id": 4,
+      "type": "SplatsReconstruct",
+      "pos": [
+        870,
+        130
+      ],
+      "size": [
+        350,
+        170
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "dataset",
+          "type": "SPLATS_DATASET",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "scene",
+          "type": "SPLATS_SCENE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "statistics_path",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SplatsReconstruct"
+      },
+      "widgets_values": [
+        false,
+        "SIMPLE_PINHOLE"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "SplatsTrainBrush",
+      "pos": [
+        1310,
+        130
+      ],
+      "size": [
+        350,
+        160
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "scene",
+          "type": "SPLATS_SCENE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "latest_ply",
+          "type": "STRING",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "export_directory",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SplatsTrainBrush"
+      },
+      "widgets_values": [
+        30000,
+        5000,
+        1920
+      ]
+    },
+    {
+      "id": 6,
+      "type": "SplatsCleanupPLY",
+      "pos": [
+        1740,
+        130
+      ],
+      "size": [
+        365,
+        400
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "ply_path",
+          "type": "STRING",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "cleaned_ply",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SplatsCleanupPLY"
+      },
+      "widgets_values": [
+        0.1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      3,
+      0,
+      "STRING"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      1,
+      "STRING"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "SPLATS_DATASET"
+    ],
+    [
+      4,
+      4,
+      0,
+      5,
+      0,
+      "SPLATS_SCENE"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
