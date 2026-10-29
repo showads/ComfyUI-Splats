@@ -59,13 +59,13 @@ class SplatsPrepareVideo:
         return {"required": {
             "project_name": ("STRING", {"default": "orbit_01"}),
             "target_frames": ("INT", {"default": 64, "min": 8, "max": 500}),
-        }, "optional": {"video": ("VIDEO",), "video_path": ("STRING", {"default": ""})}}
+        }, "optional": {"video": ("VIDEO",), "video_path": ("STRING", {"default": ""}), "setup_status": ("STRING", {"default": ""})}}
     RETURN_TYPES = ("SPLATS_DATASET", "STRING")
     RETURN_NAMES = ("dataset", "image_directory")
     FUNCTION = "prepare"
     CATEGORY = "Splats"
 
-    def prepare(self, project_name, target_frames, video=None, video_path=""):
+    def prepare(self, project_name, target_frames, video=None, video_path="", setup_status=""):
         folder = _project(project_name)
         if folder.exists():
             raise FileExistsError(f"Project already exists: {folder}; choose a new name.")
@@ -195,13 +195,46 @@ class SplatsTrainBrush:
         return (str(latest), str(output))
 
 
+
+class SplatsSetupDependencies:
+    """Opt-in install of CPU COLMAP/FFmpeg on apt-based root containers."""
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {"install_missing": ("BOOLEAN", {"default": False})}}
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("setup_status",)
+    FUNCTION = "setup"
+    CATEGORY = "Splats"
+
+    def setup(self, install_missing):
+        missing = [name for name in ("ffmpeg", "ffprobe", "colmap")
+                   if shutil.which(name) is None]
+        if missing and install_missing:
+            if os.geteuid() != 0:
+                raise RuntimeError("Installation requires root privileges. Use a prepared RunPod image.")
+            apt = shutil.which("apt-get")
+            if not apt:
+                raise RuntimeError("apt-get unavailable; use a prepared image.")
+            log = ROOT / "setup.log"
+            _run([apt, "update"], log)
+            _run([apt, "install", "-y", "ffmpeg", "colmap"], log)
+            missing = [name for name in ("ffmpeg", "ffprobe", "colmap")
+                       if shutil.which(name) is None]
+        if missing:
+            raise RuntimeError("Missing dependencies: " + ", ".join(missing) +
+                               ". Enable install_missing or use a prepared image.")
+        return ("FFmpeg and COLMAP available (CUDA support not verified)",)
+
+
 NODE_CLASS_MAPPINGS = {
+    "SplatsSetupDependencies": SplatsSetupDependencies,
     "SplatsLoadVideoPath": SplatsLoadVideoPath,
     "SplatsPrepareVideo": SplatsPrepareVideo,
     "SplatsReconstruct": SplatsReconstruct,
     "SplatsTrainBrush": SplatsTrainBrush,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "SplatsSetupDependencies": "Splats: Setup Dependencies",
     "SplatsLoadVideoPath": "Splats: Load Video Path",
     "SplatsPrepareVideo": "Splats: Prepare Video",
     "SplatsReconstruct": "Splats: Reconstruct (COLMAP)",
