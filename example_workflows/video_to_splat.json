@@ -1,6 +1,6 @@
 {
-  "last_node_id": 5,
-  "last_link_id": 4,
+  "last_node_id": 6,
+  "last_link_id": 5,
   "nodes": [
     {
       "id": 1,
@@ -180,7 +180,9 @@
         {
           "name": "latest_ply",
           "type": "STRING",
-          "links": []
+          "links": [
+            5
+          ]
         },
         {
           "name": "export_directory",
@@ -196,6 +198,33 @@
         5000,
         1920
       ]
+    },
+    {
+      "id": 6,
+      "type": "SplatsSaveResult",
+      "pos": [
+        1760,
+        130
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "ply_path",
+          "type": "STRING",
+          "link": 5
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SplatsSaveResult"
+      },
+      "widgets_values": []
     }
   ],
   "links": [
@@ -230,6 +259,14 @@
       5,
       0,
       "SPLATS_SCENE"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "STRING"
     ]
   ],
   "groups": [],
