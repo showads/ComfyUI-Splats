@@ -263,7 +263,27 @@ class SplatsCleanupPLY:
         return (str(output), json.dumps(report))
 
 
+
+class SplatsSaveResult:
+    """Terminal output node to ensure ComfyUI executes the graph."""
+    OUTPUT_NODE = True
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {"ply_path": ("STRING", {"forceInput": True})}}
+    RETURN_TYPES = ()
+    FUNCTION = "save"
+    CATEGORY = "Splats"
+
+    def save(self, ply_path):
+        path = Path(ply_path).expanduser().resolve()
+        if not path.is_file() or path.suffix.lower() != ".ply":
+            raise FileNotFoundError(f"Gaussian splat PLY not found: {path}")
+        return {"ui": {"text": [f"Saved Gaussian splat: {path}"]}}
+
+
 NODE_CLASS_MAPPINGS = {
+    "SplatsSaveResult": SplatsSaveResult,
     "SplatsCleanupPLY": SplatsCleanupPLY,
     "SplatsSetupDependencies": SplatsSetupDependencies,
     "SplatsLoadVideoPath": SplatsLoadVideoPath,
@@ -272,6 +292,7 @@ NODE_CLASS_MAPPINGS = {
     "SplatsTrainBrush": SplatsTrainBrush,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "SplatsSaveResult": "Splats: Save Result (Output)",
     "SplatsCleanupPLY": "Splats: Clean PLY (Non-destructive)",
     "SplatsSetupDependencies": "Splats: Setup Dependencies",
     "SplatsLoadVideoPath": "Splats: Load Video Path",
