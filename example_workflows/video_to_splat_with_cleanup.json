@@ -1,6 +1,6 @@
 {
-  "last_node_id": 6,
-  "last_link_id": 5,
+  "last_node_id": 7,
+  "last_link_id": 6,
   "nodes": [
     {
       "id": 1,
@@ -224,7 +224,9 @@
         {
           "name": "cleaned_ply",
           "type": "STRING",
-          "links": []
+          "links": [
+            6
+          ]
         },
         {
           "name": "report",
@@ -246,6 +248,33 @@
         0,
         0
       ]
+    },
+    {
+      "id": 7,
+      "type": "SplatsSaveResult",
+      "pos": [
+        2190,
+        130
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "ply_path",
+          "type": "STRING",
+          "link": 6
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SplatsSaveResult"
+      },
+      "widgets_values": []
     }
   ],
   "links": [
@@ -286,6 +315,14 @@
       5,
       0,
       6,
+      0,
+      "STRING"
+    ],
+    [
+      6,
+      6,
+      0,
+      7,
       0,
       "STRING"
     ]
