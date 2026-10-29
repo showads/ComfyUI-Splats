@@ -30,3 +30,11 @@ Use `Splats: Load Video Path` instead of the H3 VIDEO output for a pre-existing 
 This milestone uses synchronous subprocesses (a long job occupies a ComfyUI queue slot), with logs written to each project. It does not yet include the embedded 3D splat viewer, installation manager, cancellation controls or progress streaming. Those are planned as separate milestones. Camera mapping is mostly CPU; CUDA SIFT accelerates feature extraction and matching when supported.
 
 Safety: paths and project names are validated, processes are launched without a shell, and no software is installed automatically.
+
+## Example workflow and opt-in setup
+
+Load [example_workflows/video_to_splat.json](example_workflows/video_to_splat.json) into ComfyUI. It connects a **video filepath** node to Prepare Video, Reconstruct and Train Brush. A native H3 VIDEO wire is supported as an optional input on Prepare Video, but this example uses a saved MP4 path for broader compatibility.
+
+The **Splats: Setup Dependencies** node can install missing FFmpeg and CPU COLMAP using apt on root-enabled Ubuntu/RunPod containers. Enable `install_missing` to authorize that action; otherwise it only checks prerequisites. It is wired into Prepare Video to run first. Installation may need network access, root permissions and compatible OS packages; CUDA-enabled COLMAP and Brush are not automatically installed. To avoid SSH entirely on a fresh pod, a prebuilt RunPod image/template with those tools is the reliable next milestone.
+
+**Known limitation:** this workflow and the ComfyUI native VIDEO adapter have not yet been smoke-tested in a running ComfyUI instance.
