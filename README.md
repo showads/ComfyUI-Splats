@@ -38,3 +38,18 @@ Load [example_workflows/video_to_splat.json](example_workflows/video_to_splat.js
 The **Splats: Setup Dependencies** node can install missing FFmpeg and CPU COLMAP using apt on root-enabled Ubuntu/RunPod containers. Enable `install_missing` to authorize that action; otherwise it only checks prerequisites. It is wired into Prepare Video to run first. Installation may need network access, root permissions and compatible OS packages; CUDA-enabled COLMAP and Brush are not automatically installed. To avoid SSH entirely on a fresh pod, a prebuilt RunPod image/template with those tools is the reliable next milestone.
 
 **Known limitation:** this workflow and the ComfyUI native VIDEO adapter have not yet been smoke-tested in a running ComfyUI instance.
+
+## Cleaning noisy splats (experimental)
+
+Install Python dependencies into the **ComfyUI Python environment**: `pip install -r requirements.txt` (or `uv pip install --python /path/to/comfyui/python -r requirements.txt`).
+
+The **Splats: Clean PLY (Non-destructive)** node loads a standard 3DGS Gaussian PLY and exports `*_cleaned.ply` without changing the original. Controls:
+
+- `min_opacity`: sigmoid of the stored opacity logit, 0–1; start around 0.05–0.15.
+- `max_axis`: upper limit on Gaussian world-space standard deviation (largest axis). Zero disables. Scene units are arbitrary; inspect your PLY before setting.
+- `max_anisotropy`: upper limit on ratio of largest to smallest Gaussian axis. Zero disables.
+- `crop_center_*` and `crop_half_*`: axis-aligned crop box; half-size zero on an axis means no crop on that axis.
+
+This is a **static export filter**, not yet a live viewer control or draggable 3D crop box. It does not repair inaccurate camera poses or reconstruct missing geometry. The source PLY remains untouched. It supports conventional 3D Gaussian PLY fields, not arbitrary splat encodings. You can compare Brush's 5k/10k/30k PLY files by changing the input path.
+
+Planned follow-ups: in-viewer interactive filtering/crop, checkpoint gallery, COLMAP camera visualization, and foreground-masked Brush training. Masked training needs verification against the selected Brush version and is not implemented yet.
