@@ -226,7 +226,45 @@ class SplatsSetupDependencies:
         return ("FFmpeg and COLMAP available (CUDA support not verified)",)
 
 
+
+class SplatsCleanupPLY:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "ply_path": ("STRING", {"default": "/workspace/splat_30000.ply"}),
+            "min_opacity": ("FLOAT", {"default": 0.05, "min": 0.0, "max": 1.0, "step": 0.01}),
+            "max_axis": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1000.0, "step": 0.05}),
+            "max_anisotropy": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 10000.0, "step": 0.5}),
+            "crop_center_x": ("FLOAT", {"default": 0.0, "step": 0.1}),
+            "crop_center_y": ("FLOAT", {"default": 0.0, "step": 0.1}),
+            "crop_center_z": ("FLOAT", {"default": 0.0, "step": 0.1}),
+            "crop_half_x": ("FLOAT", {"default": 0.0, "min": 0.0, "step": 0.1}),
+            "crop_half_y": ("FLOAT", {"default": 0.0, "min": 0.0, "step": 0.1}),
+            "crop_half_z": ("FLOAT", {"default": 0.0, "min": 0.0, "step": 0.1}),
+        }}
+    RETURN_TYPES = ("STRING", "STRING")
+    RETURN_NAMES = ("cleaned_ply", "report")
+    FUNCTION = "run"
+    CATEGORY = "Splats"
+
+    def run(self, ply_path, min_opacity, max_axis, max_anisotropy,
+            crop_center_x, crop_center_y, crop_center_z,
+            crop_half_x, crop_half_y, crop_half_z):
+        from .splat_cleanup import cleanup
+        src = Path(ply_path).expanduser().resolve()
+        if not src.is_file() or src.suffix.lower() != ".ply":
+            raise ValueError("Select an existing Gaussian splat .ply file")
+        output = src.with_name(src.stem + "_cleaned.ply")
+        if output.exists():
+            raise FileExistsError(f"Output exists: {output}; rename or move it first")
+        report = cleanup(src, output, min_opacity, max_axis, max_anisotropy,
+                         (crop_center_x, crop_center_y, crop_center_z),
+                         (crop_half_x, crop_half_y, crop_half_z))
+        return (str(output), json.dumps(report))
+
+
 NODE_CLASS_MAPPINGS = {
+    "SplatsCleanupPLY": SplatsCleanupPLY,
     "SplatsSetupDependencies": SplatsSetupDependencies,
     "SplatsLoadVideoPath": SplatsLoadVideoPath,
     "SplatsPrepareVideo": SplatsPrepareVideo,
@@ -234,6 +272,7 @@ NODE_CLASS_MAPPINGS = {
     "SplatsTrainBrush": SplatsTrainBrush,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "SplatsCleanupPLY": "Splats: Clean PLY (Non-destructive)",
     "SplatsSetupDependencies": "Splats: Setup Dependencies",
     "SplatsLoadVideoPath": "Splats: Load Video Path",
     "SplatsPrepareVideo": "Splats: Prepare Video",
